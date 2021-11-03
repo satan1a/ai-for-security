@@ -12,7 +12,7 @@
 
 -   特定类型恶意URL在文本上存在普遍的**词汇特征**，例如钓鱼URL中常见"login", "account", "sigin"等关键词
 
-因此我们尝试使用机器学习算法对恶意URL进行检测分析
+因此我们尝试使用机器学习算法对恶意URL进行检测分析。
 
 
 
@@ -92,6 +92,22 @@ def url_tokenize(url):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 ```
 
+### 注：TF-IDF
+
+TF-IDF(Term Frequency – Inverse Document Frequency)，即词频-逆文档频率。在计算上为词频和逆文档频率的乘积。计算方法如下：
+
+-   计算词频（TF）
+    -   某个词在文章中出现的次数/文章的总词数
+    -   即某个词在这段文字中出现得越多，TF就越大
+-   计算逆文档频率（IDF）
+    -   log(语料库的文档总数/包含该词的文档数+1)
+    -   某个词在普遍情况下越常见，分母大，IDF也约趋于0
+-   计算TF-IDF
+    -   TF-IDF = TF * IDF
+    -   TF-IDF越大，说明词在这段文章中越重要，但因为有IDF的存在，又能避免把“是”、”的“、“和”等停用词的TF-IDF值降低
+
+在应用上：将文章分词，计算TF-IDF，按照其值大小降序排列，排名靠前的即文章的关键词
+
 
 
 ## 模型选择
@@ -123,10 +139,12 @@ def url_tokenize(url):
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 ```
 
-`test_size`：测试集占总样本的占比
-`random_state`：随机数的种子
+使用线性回归模型，最后得到测试拟合分数为：**0.9599966703530615**
 
-使用线性回归模型，最后得到测试拟合分数为：0.9599966703530615
+注，参数介绍：
+
+-   `test_size`：测试集在总样本中的占比
+-   `random_state`：随机数的种子，也可以理解为该组随机数的编号。规则是：种子不同时，产生不同的随机数；种子相同时，在不同实例下也产生相同的随机数。比如在上面的语句中，`test_size`为0.2，即选择总样本的20%作为测试集，但是如何选择呢？`random_state`就指定了：按照“第42种”规则选择这20%随机的数据。
 
 
 
