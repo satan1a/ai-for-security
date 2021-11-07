@@ -155,6 +155,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 Author: Toky
 Description: 基于机器学习的恶意URL检测
 """
+import copy
 import pickle
 
 import pandas as pd
@@ -199,14 +200,14 @@ def url_tokenize(url):
     return urltoken_list
 
 
-def dump_model_object(file_path):
+def dump_model_object(file_path, model_object):
     """
     使用pickle将内存中的对象转换为文本流保存为本地文件
     :param file_path:
     :return:
     """
     with open(file_path, "wb") as f:
-        pickle.dump(l_regress, f)
+        pickle.dump(model_object, f)
     f.close()
 
 
@@ -222,6 +223,7 @@ if __name__ == '__main__':
     使用TF-IDF算法提取关键词特征，并将数据帧划分为训练集和测试集
     """
     url_vectorizer = TfidfVectorizer(tokenizer=url_tokenize)
+    url_vectorizer_save = copy.deepcopy(url_vectorizer)
     x = url_vectorizer.fit_transform(grey_urls)
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
@@ -235,9 +237,10 @@ if __name__ == '__main__':
     print("测试拟合分数为：{0}".format(l_score))
 
     file_mode = "../../model/model-0x3/model.pkl"
-    dump_model_object(file_mode)
+    dump_model_object(file_mode, l_regress)
     file_vector = "../../model/model-0x3/vector.pl"
-    dump_model_object(file_vector)
+    dump_model_object(file_vector, url_vectorizer_save)
+    
 ```
 
 
